@@ -6,7 +6,7 @@ This guide helps diagnose and fix common issues with the Google Calendar MCP ser
 
 ### 1. Test Server Startup
 ```bash
-GOOGLE_CALENDAR_CREDENTIALS_JSON='{"type":"service_account","project_id":"test"}' go run main.go
+go run main.go
 ```
 
 **Expected output:**
@@ -61,19 +61,59 @@ Failed to load configuration: configuration validation failed: GOOGLE_CALENDAR_C
 **Cause:** Missing or invalid environment variables
 
 **Solution:**
-1. Create credentials file or set JSON string:
+1. Create a `.env` file:
+   ```bash
+   cp env.example .env
+   # Edit .env with your credentials
+   ```
+
+2. Or set environment variables directly:
    ```bash
    export GOOGLE_CALENDAR_CREDENTIALS_JSON='{"type":"service_account","project_id":"your-project"}'
    ```
 
-2. Or copy and edit the example:
+3. Verify .env file:
    ```bash
-   cp env.example .env
-   # Edit .env with your credentials
-   source .env
+   # Check if .env exists
+   ls -la .env
+   
+   # Check .env file permissions
+   chmod 600 .env
    ```
 
-### Issue 3: Calendar Tools Fail with Authentication Error
+### Issue 3: Environment Variables Not Loading
+
+**Symptoms:**
+```
+Warning: .env file not found, using environment variables
+Failed to load configuration: configuration validation failed: GOOGLE_CALENDAR_CREDENTIALS_JSON is required
+```
+
+**Solutions:**
+1. **Check .env file location:**
+   - Ensure .env file is in the project root directory
+   - Verify file name is exactly ".env" (not ".env.local" etc.)
+
+2. **Check .env file format:**
+   - No spaces around '=' sign
+   - No quotes around values unless they contain spaces
+   - Each variable on a new line
+
+3. **Check .env file content:**
+   ```bash
+   # View .env content (excluding credentials)
+   grep -v CREDENTIALS .env
+   
+   # Check file format
+   cat -A .env  # Shows hidden characters
+   ```
+
+4. **Verify file permissions:**
+   ```bash
+   chmod 600 .env
+   ```
+
+### Issue 4: Calendar Tools Fail with Authentication Error
 
 **Symptoms:**
 ```json
@@ -95,7 +135,7 @@ Failed to load configuration: configuration validation failed: GOOGLE_CALENDAR_C
    - Share your Google Calendar with the service account email
    - Grant "Make changes to events" permission
 
-### Issue 4: "Invalid time format" Error
+### Issue 5: "Invalid time format" Error
 
 **Symptoms:**
 ```json
@@ -114,7 +154,7 @@ Failed to load configuration: configuration validation failed: GOOGLE_CALENDAR_C
 - `"2024-01-15T14:00:00-05:00"` (with timezone)
 - `"2024-01-15T14:00:00.000Z"` (with milliseconds)
 
-### Issue 5: Build Errors
+### Issue 6: Build Errors
 
 **Symptoms:**
 ```
@@ -127,7 +167,7 @@ go mod tidy
 go build
 ```
 
-### Issue 6: Permission Denied Errors
+### Issue 7: Permission Denied Errors
 
 **Symptoms:**
 ```json
@@ -144,7 +184,7 @@ go build
    - Ensure service account has Calendar API access
    - Check OAuth scopes in credentials
 
-### Issue 7: Network/Timeout Issues
+### Issue 8: Network/Timeout Issues
 
 **Symptoms:**
 ```json

@@ -98,14 +98,16 @@ google_cal_mcp_golang/
 ### Running the Server
 
 ```bash
-# Load environment variables and run
-source .env && ./calendar-mcp-server
+# Run the compiled binary
+./calendar-mcp-server
 ```
 
 Or directly with Go:
 ```bash
-source .env && go run main.go
+go run main.go
 ```
+
+The server will automatically load environment variables from the `.env` file if it exists. If no `.env` file is found, it will use the system environment variables.
 
 ### Testing the Server
 
@@ -125,22 +127,22 @@ The server follows the MCP (Model Context Protocol) JSON-RPC specification. Use 
 
 1. **Initialize the connection:**
 ```bash
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0.0"}}}' | GOOGLE_CALENDAR_CREDENTIALS_JSON=./credentials.json go run main.go
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0.0"}}}' | go run main.go
 ```
 
 2. **List available tools:**
 ```bash
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | GOOGLE_CALENDAR_CREDENTIALS_JSON=./credentials.json go run main.go
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | go run main.go
 ```
 
 3. **Call the calculator tool:**
 ```bash
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"calculate","arguments":{"operation":"add","x":5,"y":3}}}' | GOOGLE_CALENDAR_CREDENTIALS_JSON=./credentials.json go run main.go
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"calculate","arguments":{"operation":"add","x":5,"y":3}}}' | go run main.go
 ```
 
 4. **Check calendar availability:**
 ```bash
-echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"check_google_calendar","arguments":{"start_time":"2024-01-15T09:00:00Z","end_time":"2024-01-15T17:00:00Z"}}}' | GOOGLE_CALENDAR_CREDENTIALS_JSON=./credentials.json go run main.go
+echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"check_google_calendar","arguments":{"start_time":"2024-01-15T09:00:00Z","end_time":"2024-01-15T17:00:00Z"}}}' | go run main.go
 ```
 
 **⚠️ Important Notes:**

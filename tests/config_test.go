@@ -2,9 +2,12 @@ package tests
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"google_cal_mcp_golang/calendar"
+
+	"github.com/joho/godotenv"
 )
 
 func TestConfigValidation(t *testing.T) {
@@ -35,6 +38,49 @@ func TestConfigValidation(t *testing.T) {
 
 	if config.TimeZone != "UTC" {
 		t.Errorf("Expected default timezone 'UTC', got: %s", config.TimeZone)
+	}
+}
+
+func TestEnvFileLoading(t *testing.T) {
+	// Create a temporary .env file
+	tmpDir := t.TempDir()
+	envPath := filepath.Join(tmpDir, ".env")
+	envContent := `
+GOOGLE_CALENDAR_CREDENTIALS_JSON={"type": "service_account", "project_id": "test-env"}
+GOOGLE_CALENDAR_ID=env-test@example.com
+GOOGLE_CALENDAR_TIMEZONE=Europe/London
+ENVIRONMENT=test
+DEBUG=true
+`
+	if err := os.WriteFile(envPath, []byte(envContent), 0644); err != nil {
+		t.Fatalf("Failed to create test .env file: %v", err)
+	}
+
+	// Clear existing environment variables
+	os.Clearenv()
+
+	// Load the .env file
+	if err := godotenv.Load(envPath); err != nil {
+		t.Fatalf("Failed to load .env file: %v", err)
+	}
+
+	// Test configuration loading
+	config, err := calendar.LoadConfig()
+	if err != nil {
+		t.Fatalf("Failed to load config from .env: %v", err)
+	}
+
+	// Verify values from .env file
+	if config.CalendarID != "env-test@example.com" {
+		t.Errorf("Expected calendar ID 'env-test@example.com', got: %s", config.CalendarID)
+	}
+
+	if config.TimeZone != "Europe/London" {
+		t.Errorf("Expected timezone 'Europe/London', got: %s", config.TimeZone)
+	}
+
+	if !config.Debug {
+		t.Error("Expected debug mode to be true")
 	}
 }
 

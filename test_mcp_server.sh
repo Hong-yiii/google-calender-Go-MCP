@@ -5,7 +5,7 @@
 
 set -e
 
-SERVER_CMD="GOOGLE_CALENDAR_CREDENTIALS_JSON=./credentials.json go run main.go"
+SERVER_CMD="go run main.go"
 TEMP_DIR=$(mktemp -d)
 LOG_FILE="$TEMP_DIR/test.log"
 
